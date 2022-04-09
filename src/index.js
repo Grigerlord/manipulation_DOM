@@ -3,76 +3,72 @@
  * When you're ready to start on your site, clear the file. Happy hacking!
  **/
 
+ const baseUrl = "https://platzi-avo.vercel.app";
+ const appNode = document.querySelector("#app")
 
-const baseUrl = "https://platzi-avo.vercel.app"
+ // Intl
+ // 1.- Format fechas
+ // 2.- Format monedas
 
-const appNode = document.querySelector('#app')
+ const formatPrice = price => {
 
-//WEB API
-//Conectarnos al servidor
-    //TAREA: Usar async await
+    const newPrice = new window.Intl.NumberFormat("es-MX", {
+        style: "currency",
+        currency: "MXN"
+    }).format(price)
+
+    return newPrice;
+ }
+
+// web api
+
+// Conectarnos al server
 window
     .fetch(`${baseUrl}/api/avo`)
-    //Procesar la respuesta y convertirla en JSON
-    .then((respuesta) => respuesta.json())
-    //JSON -> Data -> Renderizar info en el browser
-    .then((responseJson) => {
+    .then(respuesta => respuesta.json())
+    .then(responseJson => {
 
-        const todosLosItems = []
-
+        const todosLosItems = [];
+        
         responseJson.data.forEach(item => {
+            
+            // Crear imagen
+            const imagen = document.createElement("img");
+            imagen.src = `${baseUrl}${item.image}`;
+            imagen.className = "h-16 w-16 md:h-24 md:w-24 rounded-full mx-auto md:mx-0 md:mr-6"
 
-            //crear imagen
-            const image = document.createElement('img')
-            image.src = `${baseUrl}${item.image}`//URL de la imagen
+            // Crear título
+            const title = document.createElement("h2");
+            title.className = "text-lg"
+            title.textContent = item.name;
 
-            //crear titulo
-            const title = document.createElement('h2')
-            title.textContent = item.name
+            // Crear precio
+            const price = document.createElement("div");
+            price.className = "text-gray-600"
+            price.textContent = formatPrice(item.price);
 
-            //crear precio
-            const price = document.createElement('div')
-            price.textContent = item.price
+            // Creamos un contenedor el título y el precio
+            const priceAndTitle = document.createElement("div")
+            priceAndTitle.className = "text-center md:text-left";
+            priceAndTitle.appendChild(title);
+            priceAndTitle.appendChild(price);
 
+            // Metemos todo dentro de una tarjeta contenedora
+            const card = document.createElement("div");
+            card.className = "md:flex bg-white rounded-lg p-6 hover:bg-gray-300";
+            card.append(imagen, priceAndTitle);
 
-            const container = document.createElement('div')
-            // container.appendChild(image)
-            // container.appendChild(title)
-            // container.appendChild(price)
-            container.append(image, title, price)
+            // Metemos todo dentro del contenedor principal
+            const contenedor = document.createElement("div");
+            contenedor.appendChild(card);
 
-            //document.body.appendChild(container)
+            todosLosItems.push(contenedor);
 
-            todosLosItems.push(container)
-        })
+        });
 
-        appNode.append(...todosLosItems)
-    })
+        appNode.append(...todosLosItems);
+        
+    });
 
-
-// const url = "https://platzi-avo.vercel.app/api/avo";
-
-// //web api
-// async function fetchData() {
-//   const response = await fetch(url),
-//   data = await response.json(),
-//   allItems = [];
-
-//   data.data.forEach((item) => {
-//     // create image
-//     const image = document.createElement("img");
-//     // create title
-//     const title = document.createElement("h2");
-//     // create price
-//     const price = document.createElement("div");
-
-//     const container = document.createElement("div");
-//     container.append(image, title, price);
-
-//     allItems.push(container);
-//   });
-
-//   document.body.append(...allItems)
-// }
-
-// fetchData();
+// Procesar la respuesta y convertirla en JSON
+// JSON -> Data -> Renderizar info browser
